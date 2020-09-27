@@ -27,7 +27,7 @@ const withDB = async (operations ,res) => {
 // app.post('/hello', (req, res) => res.send(`Hello ${req.body.name}!`)); uses bodyparser - body
 // app.get('/hello/:name', (req, res) => res.send(`Hello ${req.params.name}!`)); uses url parameters - param to get value of :name
 
-app.get('/api/product/data', async (req, res) => {
+app.get('/api/get-data', async (req, res) => {
     
     
     //connect to mongo db
@@ -37,10 +37,11 @@ app.get('/api/product/data', async (req, res) => {
         // Process the results
         if (results.length > 0) {
             results.forEach((result, i) => {
-
+                
                 console.log(result);
                 // Here you could build your html or put the results in some other data structure you want to work with
             });
+            
         } else {
             console.log(`No customers found`);
         }
