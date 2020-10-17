@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "resolutions": { "@babel/preset-env": "7.5.5" },
   "scripts": {
     "dev": "npx nodemon --exec npx babel-node src/server.js",
     "start": "node src/server.js",
