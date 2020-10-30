@@ -1,18 +1,14 @@
-//require('dotenv').config({ path: '.env' })
+//heroku setting
+var PORT = process.env.PORT || 8000;
+var USER = process.env.DB_USER;
+var PASS = process.env.DB_PASS;
+var DATA = process.env.DB_DATA;
+
+require('dotenv').config({ path: '.env' })
 import express from "express";
 import bodyParser from "body-parser";
-//import { MongoClient } from "mongodb";
-var MongoClient = require('mongodb').MongoClient 
-
+import { MongoClient } from "mongodb"; 
 import path from "path";
-
-
-//heroku setting
-//var PORT = process.env.PORT || 8000;
-var PORT = process.env.PORT;
-var USER = process.env.DB_USER
-var PASS = process.env.DB_PASS
-var DATA = process.env.DB_DATA
 
 const app = express();
 

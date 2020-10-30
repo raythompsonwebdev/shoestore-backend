@@ -6,20 +6,19 @@
   "resolutions": {
     "@babel/preset-env": "7.5.5"
   },
-  "type":"module",
+  "type": "module",
   "scripts": {
     "dev": "npx nodemon --exec npx babel-node server.js",
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "npm run build"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "engines": {
-    "npm": "6.x", 
+    "npm": "6.x",
     "node": "12.x"
-  },  
+  },
   "dependencies": {
     "@babel/core": "7.8.4",
     "@babel/node": "7.8.4",
