@@ -2,7 +2,7 @@
   "name": "react-blog-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server.js",
   "resolutions": {
     "@babel/preset-env": "7.5.5"
   },
@@ -14,6 +14,9 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "engines": {
+    "node": "12.x"
+  },
   "devDependencies": {
     "@babel/core": "7.8.4",
     "@babel/node": "7.8.4",
