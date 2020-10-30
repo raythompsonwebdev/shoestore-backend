@@ -13,7 +13,7 @@ var DATA = process.env.DB_DATA
 
 const app = express();
 
-app.use(express.static(path.join(__dirname, "./build")));
+app.use(express.static(path.join(__dirname, "/build")));
 app.use(bodyParser.json());
 
 //main connect to mongo db
