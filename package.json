@@ -2,7 +2,7 @@
   "name": "react-blog-backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./src/server.js",
   "resolutions": {
     "@babel/preset-env": "7.5.5"
   },
