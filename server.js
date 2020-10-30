@@ -1,4 +1,4 @@
-require('dotenv').config({ path: '.env' })
+//require('dotenv').config({ path: '.env' })
 import express from "express";
 import bodyParser from "body-parser";
 //import { MongoClient } from "mongodb";
