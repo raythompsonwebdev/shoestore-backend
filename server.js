@@ -1,10 +1,9 @@
 //heroku setting
+require('dotenv').config({ path: '.env' })
 var PORT = process.env.PORT || 8000;
 var USER = process.env.DB_USER;
 var PASS = process.env.DB_PASS;
 var DATA = process.env.DB_DATA;
-
-require('dotenv').config({ path: '.env' })
 import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient } from "mongodb"; 
