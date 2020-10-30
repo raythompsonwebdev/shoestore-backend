@@ -1,1 +1,1 @@
-web: node server.js
+web: node npx nodemon --exec npx babel-node server.js
