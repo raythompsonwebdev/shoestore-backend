@@ -1,9 +1,21 @@
-//heroku setting
-require('dotenv').config({ path: '.env' })
-var PORT = process.env.PORT || 8000;
-var USER = process.env.DB_USER;
-var PASS = process.env.DB_PASS;
-var DATA = process.env.DB_DATA;
+// add "type": "module", to package.json to use ES6 modules
+
+//commonjs
+//require('dotenv').config({ path: '.env' })
+
+//es6
+import dotenv from 'dotenv';
+const dot = dotenv.config({ path: '.env' });
+
+const PORT = process.env.PORT || 8000;
+const LOCAL_USER = dot.LOCAL_USER;
+const LOCAL_PASS = dot.LOCAL_PASS;
+const LOCAL_DATA = dot.LOCAL_DATA;
+
+//commonjs
+// var USER = process.env.DB_USER;
+// var PASS = process.env.DB_PASS;
+// var DATA = process.env.DB_DATA;
 import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient } from "mongodb"; 
@@ -17,8 +29,8 @@ app.use(bodyParser.json());
 //main connect to mongo db
 const withDB = async (operations, res) => {
   try {
-    const client = await MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true , user:'${LOCAL_USER}', password:'${LOCAL_PASS}'});
-    const db = client.db('${LOCAL_DATA}'); // name of database
+    const client = await MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true , user:`${LOCAL_USER}`, password:`${LOCAL_PASS}`});
+    const db = client.db(`${LOCAL_DATA}`); // name of database
     await operations(db);
     client.close();
     // const client = await MongoClient.connect(
