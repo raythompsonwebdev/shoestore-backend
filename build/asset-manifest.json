@@ -1,0 +1,30 @@
+{
+  "files": {
+    "main.css": "/static/css/main.88cd8659.chunk.css",
+    "main.js": "/static/js/main.2a316487.chunk.js",
+    "main.js.map": "/static/js/main.2a316487.chunk.js.map",
+    "runtime-main.js": "/static/js/runtime-main.8677c77a.js",
+    "runtime-main.js.map": "/static/js/runtime-main.8677c77a.js.map",
+    "static/css/2.818011ed.chunk.css": "/static/css/2.818011ed.chunk.css",
+    "static/js/2.3f89f391.chunk.js": "/static/js/2.3f89f391.chunk.js",
+    "static/js/2.3f89f391.chunk.js.map": "/static/js/2.3f89f391.chunk.js.map",
+    "index.html": "/index.html",
+    "static/css/2.818011ed.chunk.css.map": "/static/css/2.818011ed.chunk.css.map",
+    "static/css/main.88cd8659.chunk.css.map": "/static/css/main.88cd8659.chunk.css.map",
+    "static/js/2.3f89f391.chunk.js.LICENSE.txt": "/static/js/2.3f89f391.chunk.js.LICENSE.txt",
+    "static/media/bannerimage.9e4893e0.jpg": "/static/media/bannerimage.9e4893e0.jpg",
+    "static/media/basket-ball-shoe.cd813f50.png": "/static/media/basket-ball-shoe.cd813f50.png",
+    "static/media/style.css": "/static/media/old-standard-tt-v7-latin-regular.cfdeefb2.woff",
+    "static/media/fur-lined-hiking-boot.368bc28d.png": "/static/media/fur-lined-hiking-boot.368bc28d.png",
+    "static/media/fur-lined-ladies-boot.84316b11.png": "/static/media/fur-lined-ladies-boot.84316b11.png",
+    "static/media/kids-trainer.5a41e36d.png": "/static/media/kids-trainer.5a41e36d.png",
+    "static/media/shoe-store-logo.52ea9f64.png": "/static/media/shoe-store-logo.52ea9f64.png"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.8677c77a.js",
+    "static/css/2.818011ed.chunk.css",
+    "static/js/2.3f89f391.chunk.js",
+    "static/css/main.88cd8659.chunk.css",
+    "static/js/main.2a316487.chunk.js"
+  ]
+}

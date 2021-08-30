@@ -1,13 +1,14 @@
 // add "type": "module", to package.json to use ES6 modules
 
 //commonjs
-//require('dotenv').config({ path: '.env' })
+//const dotenv = require('dotenv')
 
 //es6
 import dotenv from 'dotenv';
 const dot = dotenv.config({ path: '.env' });
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-const PORT = process.env.PORT || 8000;
+const PORT = 8000;
 const LOCAL_USER = dot.LOCAL_USER;
 const LOCAL_PASS = dot.LOCAL_PASS;
 const LOCAL_DATA = dot.LOCAL_DATA;
@@ -29,8 +30,8 @@ app.use(bodyParser.json());
 //main connect to mongo db
 const withDB = async (operations, res) => {
   try {
-    const client = await MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true , user:`${LOCAL_USER}`, password:`${LOCAL_PASS}`});
-    const db = client.db(`${LOCAL_DATA}`); // name of database
+    const client = await MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true , user:LOCAL_USER, password:LOCAL_PASS});
+    const db = client.db(LOCAL_DATA); // name of database
     await operations(db);
     client.close();
     // const client = await MongoClient.connect(
