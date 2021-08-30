@@ -16,7 +16,7 @@ const DATA = process.env.DB_DATA;
 //es6
 //import dotenv from 'dotenv';
 //const dot = dotenv.config({ path: '.env' });
-//const __dirname = path.dirname(new URL(import.meta.url).pathname);
+const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const app = express();
 

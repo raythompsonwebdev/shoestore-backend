@@ -6,7 +6,8 @@
   "resolutions": {
     "@babel/preset-env": "7.5.5"
   },
-  "proxy": "http://localhost:8000/",  
+  "proxy": "http://localhost:8000/",
+  "type": "module",
   "scripts": {
     "dev": "npx nodemon --exec npx babel-node server.js",
     "start": "node server.js",
