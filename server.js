@@ -18,8 +18,6 @@ const DATA = process.env.DB_DATA;
 //const dot = dotenv.config({ path: '.env' });
 //const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
-//commonjs
-
 const app = express();
 
 app.use(express.static(path.join(__dirname, "/build")));
