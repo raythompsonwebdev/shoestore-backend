@@ -17,18 +17,18 @@ app.use(bodyParser.json());
 //main connect to mongo db
 const withDB = async (operations, res) => {
   try {
-    const client = await MongoClient.connect(
-      `mongodb+srv://${USER}:${PASS}@cluster0.aqewv.mongodb.net/${DATA}?retryWrites=true&w=majority`,
-      { useNewUrlParser: true, useUnifiedTopology: true }
-    );
-    const db = client.db("shoestore"); // name of database
+    const client = await MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true , user:'${LOCAL_USER}', password:'${LOCAL_PASS}'});
+    const db = client.db('${LOCAL_DATA}'); // name of database
     await operations(db);
     client.close();
-
-    // const client = await MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true , user:'${LOCAL_USER}', password:'${LOCAL_PASS}'});
-    // const db = client.db('${LOCAL_DATA}'); // name of database
+    // const client = await MongoClient.connect(
+    //   `mongodb+srv://${USER}:${PASS}@cluster0.aqewv.mongodb.net/${DATA}?retryWrites=true&w=majority`,
+    //   { useNewUrlParser: true, useUnifiedTopology: true }
+    // );
+    // const db = client.db("shoestore"); // name of database
     // await operations(db);
     // client.close();
+    
   } catch (err) {
     res.status(500).send({ message: "Database Error", err });
   }
