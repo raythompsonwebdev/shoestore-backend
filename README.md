@@ -1,4 +1,4 @@
-# shoestore-backend API
+# Shoestore-API
 
 shoestore website api deployed to heroku serving data from a mungodb database. 
 
@@ -37,7 +37,7 @@ This is an example of how to list things you need to use the software and how to
    npm install
    ```
 
-# start server
+### Start development server
 
 ```sh
 $ npx babel-node src/server.js
@@ -45,8 +45,7 @@ or
 $ npm run dev
 ```
 
-# run server continuosly
-
+### test production server
 ```sh
 $ node server.js
 or
