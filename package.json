@@ -9,6 +9,7 @@
   "proxy": "http://localhost:8000/",
   "type": "module",
   "scripts": {
+    "build": "babel ./src --out-dir ./build",
     "dev": "npx nodemon --exec npx babel-node server.js",
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
