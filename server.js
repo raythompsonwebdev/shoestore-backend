@@ -2,43 +2,57 @@ import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient } from "mongodb"; 
 import path from "path";
-
-const PORT = process.env.PORT || 8000;
-const USER = process.env.DB_USER;
-const PASS = process.env.DB_PASS;
-const DATA = process.env.DB_DATA;
-
-// add "type": "module", to package.json to use ES6 modules
+//import f from 'util';
+//import assert from 'assert';
 
 //commonjs
 //const dotenv = require('dotenv')
 
 //es6
-//import dotenv from 'dotenv';
-//const dot = dotenv.config({ path: '.env' });
+import dotenv from 'dotenv';
+const dot = dotenv.config({ path: '.env' });
+
+const PORT = dot.PORT || 8000;
+const USER = dot.DB_USER;
+const PASS = dot.DB_PASS;
+const DATA = dot.DB_DATA;
+
+//const user = encodeURIComponent(USER);
+//const password = encodeURIComponent(PASS);
+
+// Connection URL
+//const url = f.format('mongodb://%s:%s@localhost:27017', user, password );
+// add "type": "module", to package.json to use ES6 modules
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
 const app = express();
-
 app.use(express.static(path.join(__dirname, "/build")));
 app.use(bodyParser.json());
 
 //main connect to mongo db
 const withDB = async (operations, res) => {
   try {
-    // const client = await MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true , user:LOCAL_USER, password:LOCAL_PASS});
-    // const db = client.db(LOCAL_DATA); // name of database
-    // await operations(db);
-    // client.close();
 
-    const client = await MongoClient.connect(
-      `mongodb+srv://${USER}:${PASS}@cluster0.aqewv.mongodb.net/${DATA}?retryWrites=true&w=majority`,      
-      { useNewUrlParser: true, useUnifiedTopology: true }
-    );
-    const db = client.db("shoestore"); // name of database
+    // const client = MongoClient.connect(url, function(err, db) {
+    //   assert.equal(null, err);
+    //   console.log("Connected correctly to server");
+    //   db = client.db(DATA); // name of database
+    //   operations(db);
+    //   client.close();
+    // });
+    
+    const client = MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true , user:`${USER}`, password:`${PASS}`});
+    const db = client.db(`${DATA}`); // name of database
     await operations(db);
     client.close();
+
+    // const client = await MongoClient.connect(
+    //   `mongodb+srv://${USER}:${PASS}@cluster0.aqewv.mongodb.net/${DATA}?retryWrites=true&w=majority`,      
+    //   { useNewUrlParser: true, useUnifiedTopology: true }
+    // );
+    // const db = client.db("shoestore"); // name of database
+    // await operations(db);
+    // client.close();
     
   } catch (err) {
     res.status(500).send({ message: "Database Error", err });
