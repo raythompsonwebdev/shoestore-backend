@@ -1,69 +1,58 @@
+//es6
+import dotenv from 'dotenv';
 import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient } from "mongodb"; 
-import path from "path";
-//import f from 'util';
 //import assert from 'assert';
+import path from "path";
 
-//commonjs
-//const dotenv = require('dotenv')
-
-//es6
-import dotenv from 'dotenv';
-const dot = dotenv.config({ path: '.env' });
+const dot = dotenv.config({ path: ".env" });;
 
 const PORT = dot.PORT || 8000;
-const USER = dot.DB_USER;
-const PASS = dot.DB_PASS;
-const DATA = dot.DB_DATA;
-
-//const user = encodeURIComponent(USER);
-//const password = encodeURIComponent(PASS);
-
-// Connection URL
-//const url = f.format('mongodb://%s:%s@localhost:27017', user, password );
-// add "type": "module", to package.json to use ES6 modules
+//const PORT = dot.PORT;
+const LOCAL_USER = dot.LOCAL_USER;
+const LOCAL_PASS = dot.LOCAL_PASS;
+const LOCAL_DATA = dot.LOCAL_DATA;
+// const USER = dot.DB_USER;
+// const PASS = dot.DB_PASS;
+// const DATA = dot.DB_DATA;
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
+
 const app = express();
-app.use(express.static(path.join(__dirname, "/build")));
+
 app.use(bodyParser.json());
+
+app.use(express.json());
+
+app.use(express.static(path.join(__dirname, "/build")));
+
+//const bodyParser = express.urlencoded({ extended: false });
 
 //main connect to mongo db
 const withDB = async (operations, res) => {
+
   try {
 
-    // const client = MongoClient.connect(url, function(err, db) {
-    //   assert.equal(null, err);
-    //   console.log("Connected correctly to server");
-    //   db = client.db(DATA); // name of database
-    //   operations(db);
-    //   client.close();
-    // });
-    
-    const client = MongoClient.connect('mongodb://localhost:27017', { useNewUrlParser: true, useUnifiedTopology: true , user:`${USER}`, password:`${PASS}`});
-    const db = client.db(`${DATA}`); // name of database
+    const client = await MongoClient.connect(`mongodb://localhost:27017`, { useNewUrlParser: true, useUnifiedTopology: true });
+    const db = client.db('shoestore');   
     await operations(db);
-    client.close();
-
-    // const client = await MongoClient.connect(
-    //   `mongodb+srv://${USER}:${PASS}@cluster0.aqewv.mongodb.net/${DATA}?retryWrites=true&w=majority`,      
-    //   { useNewUrlParser: true, useUnifiedTopology: true }
-    // );
-    // const db = client.db("shoestore"); // name of database
+    client.close(); 
+    
+    
+    // const client = await MongoClient.connect(`mongodb://${LOCAL_USER}:${LOCAL_PASS}@localhost:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true });
+    // const db = client.db(`${LOCAL_DATA}`);   
     // await operations(db);
-    // client.close();
+    // client.close();     
+
     
   } catch (err) {
     res.status(500).send({ message: "Database Error", err });
+    process.exit(1);
   }
 };
 
-// app.get('/hello', (req, res) => res.send('Hello!'));
-// app.post('/hello', (req, res) => res.send(`Hello ${req.body.name}!`)); uses bodyparser - body
-// app.get('/hello/:name', (req, res) => res.send(`Hello ${req.params.name}!`)); uses url parameters - param to get value of :name
-
-app.get("/api/get-data", async (req, res) => {
+app.get("/api/data/", async (req, res) => {
   //connect to mongo db
   await withDB(async (db) => {
     const productsInfo = await db.collection("products").find({});
