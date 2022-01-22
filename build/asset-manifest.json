@@ -1,27 +1,31 @@
 {
   "files": {
-    "main.css": "/static/css/main.b3f9070d.css",
-    "main.js": "/static/js/main.c743b2e4.js",
+    "main.css": "/static/css/main.ba6337a7.css",
+    "main.js": "/static/js/main.619c7b6f.js",
     "static/media/bg-img.png": "/static/media/bg-img.15b253d26859f5306910.png",
     "static/media/old-standard-tt-v7-latin-700.svg": "/static/media/old-standard-tt-v7-latin-700.edd7c67d4632c76a5d81.svg",
     "static/media/old-standard-tt-v7-latin-regular.svg": "/static/media/old-standard-tt-v7-latin-regular.16b6b5ea4d279883232a.svg",
     "static/media/old-standard-tt-v7-latin-700.ttf": "/static/media/old-standard-tt-v7-latin-700.a8187e1e7dacc10ae6f0.ttf",
     "static/media/old-standard-tt-v7-latin-regular.ttf": "/static/media/old-standard-tt-v7-latin-regular.2129441b86c90612131a.ttf",
     "static/media/form-bg-comp.png": "/static/media/form-bg-comp.ebe224320126dac1e564.png",
+    "static/media/fur-lined-hiking-boot.png": "/static/media/fur-lined-hiking-boot.368bc28dfb95f0a5fc0f.png",
+    "static/media/basket-ball-shoe.png": "/static/media/basket-ball-shoe.cd813f5042ff8d649092.png",
     "static/media/old-standard-tt-v7-latin-700.woff": "/static/media/old-standard-tt-v7-latin-700.25c919f557edaf84518f.woff",
     "static/media/old-standard-tt-v7-latin-regular.woff": "/static/media/old-standard-tt-v7-latin-regular.cfdeefb287482174532c.woff",
     "static/media/old-standard-tt-v7-latin-700.eot": "/static/media/old-standard-tt-v7-latin-700.312d4e6b3a74690ec53c.eot",
     "static/media/old-standard-tt-v7-latin-regular.eot": "/static/media/old-standard-tt-v7-latin-regular.185c613d99472b9130fa.eot",
+    "static/media/kids-trainer.png": "/static/media/kids-trainer.5a41e36d5578639da00f.png",
     "static/media/bannerimage.jpg": "/static/media/bannerimage.9e4893e03d4abd8143f8.jpg",
     "static/media/shoe-store-logo.png": "/static/media/shoe-store-logo.52ea9f64c0aa3c9fc56f.png",
     "static/media/old-standard-tt-v7-latin-700.woff2": "/static/media/old-standard-tt-v7-latin-700.dd4f5002f4e69a7b1593.woff2",
     "static/media/old-standard-tt-v7-latin-regular.woff2": "/static/media/old-standard-tt-v7-latin-regular.2519dff954f1f85ffa49.woff2",
+    "static/media/fur-lined-ladies-boot.png": "/static/media/fur-lined-ladies-boot.84316b11f46832f76826.png",
     "index.html": "/index.html",
-    "main.b3f9070d.css.map": "/static/css/main.b3f9070d.css.map",
-    "main.c743b2e4.js.map": "/static/js/main.c743b2e4.js.map"
+    "main.ba6337a7.css.map": "/static/css/main.ba6337a7.css.map",
+    "main.619c7b6f.js.map": "/static/js/main.619c7b6f.js.map"
   },
   "entrypoints": [
-    "static/css/main.b3f9070d.css",
-    "static/js/main.c743b2e4.js"
+    "static/css/main.ba6337a7.css",
+    "static/js/main.619c7b6f.js"
   ]
 }
