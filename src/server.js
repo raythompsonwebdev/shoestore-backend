@@ -1,16 +1,16 @@
 //es6
-import dotenv from 'dotenv';
+//import dotenv from 'dotenv';
 import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient } from "mongodb"; 
 import path from "path";
 
-const dot = dotenv.config({ path: ".env" });
+//const dot = dotenv.config({ path: ".env" });
 
-const PORT = dot.PORT || 8000;
-const USER = dot.DB_USER;
-const PASS = dot.DB_PASS;
-const DATA = dot.DB_DATA;
+const PORT = process.env.PORT || 8000;
+const DB_USER = process.env.DB_USER;
+const DB_PASS = process.env.DB_PASS;
+const DB_DATA = process.env.DB_DATA;
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
