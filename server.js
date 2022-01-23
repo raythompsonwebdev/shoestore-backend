@@ -34,16 +34,15 @@ const withDB = async (operations, res) => {
 
   try {
 
-    const client = await MongoClient.connect(`mongodb://localhost:27017`, { useNewUrlParser: true, useUnifiedTopology: true });
-    const db = client.db('shoestore');   
-    await operations(db);
-    client.close(); 
-    
-    
-    // const client = await MongoClient.connect(`mongodb+srv://$:gatzwHTmwsB6wYAs@cluster0.aqewv.mongodb.net/shoestore?authSource=admin&replicaSet=atlas-qs1f2z-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true`, { useNewUrlParser: true, useUnifiedTopology: true });
-    // const db = client.db(`shoestore`);   
+    // const client = await MongoClient.connect(`mongodb://localhost:27017`, { useNewUrlParser: true, useUnifiedTopology: true });
+    // const db = client.db('shoestore');   
     // await operations(db);
     // client.close();     
+    
+    const client = await MongoClient.connect(`mongodb+srv://rayThompWeb:gatzwHTmwsB6wYAs@cluster0.aqewv.mongodb.net/shoestore?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
+    const db = client.db(`shoestore`);   
+    await operations(db);
+    client.close();     
 
     
   } catch (err) {
