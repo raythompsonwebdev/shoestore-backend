@@ -35,8 +35,7 @@ const withDB = async (operations, res) => {
     const client = await MongoClient.connect(`mongodb+srv://${DB_USER}:${DB_PASS}@cluster0.aqewv.mongodb.net/${DB_DATA}?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
     const db = client.db(`shoestore`);   
     await operations(db);
-    client.close();     
-
+    client.close();  
     
   } catch (err) {
     res.status(500).send({ message: "Database Error", err });
@@ -79,7 +78,6 @@ app.post("/api/product/:name/likes", async (req, res) => {
 
   //connect to mongo db
   await withDB(async (db) => {
-
     try{
     const productsInfo = await db.collection("products").findOne({ name: productName });
 
@@ -91,7 +89,6 @@ app.post("/api/product/:name/likes", async (req, res) => {
         },
       }
     );
-
     const updatedProductInfo = await db.collection("products").findOne({ name: productName });
     res.status(200).json(updatedProductInfo);
 
