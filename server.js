@@ -3,16 +3,11 @@ import dotenv from 'dotenv';
 import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient } from "mongodb"; 
-//import assert from 'assert';
 import path from "path";
 
 const dot = dotenv.config({ path: ".env" });;
 
 const PORT = dot.PORT || 8000;
-//const PORT = dot.PORT;
-// const LOCAL_USER = dot.LOCAL_USER;
-// const LOCAL_PASS = dot.LOCAL_PASS;
-// const LOCAL_DATA = dot.LOCAL_DATA;
 const USER = dot.DB_USER;
 const PASS = dot.DB_PASS;
 const DATA = dot.DB_DATA;
@@ -26,8 +21,6 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "/build")));
-
-//const bodyParser = express.urlencoded({ extended: false });
 
 //main connect to mongo db
 const withDB = async (operations, res) => {
@@ -83,14 +76,6 @@ app.get("/api/product/:name", async (req, res) => {
 
 app.post("/api/product/:name/likes", async (req, res) => {
   const productName = req.params.name;
-
-  console.log(productName);
-
-  // productsInfo[productName].likes += 1;
-
-  // res
-  //   .status(200)
-  //   .send(`${productName} now has ${productsInfo[productName].likes} likes`);
 
   //connect to mongo db
   await withDB(async (db) => {
