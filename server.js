@@ -39,7 +39,7 @@ const withDB = async (operations, res) => {
     // await operations(db);
     // client.close();     
     
-    const client = await MongoClient.connect(`mongodb+srv://rayThompWeb:gatzwHTmwsB6wYAs@cluster0.aqewv.mongodb.net/shoestore?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = await MongoClient.connect(`mongodb+srv://${DB_USER}:${DB_PASS}@cluster0.aqewv.mongodb.net/${DB_DATA}?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
     const db = client.db(`shoestore`);   
     await operations(db);
     client.close();     
