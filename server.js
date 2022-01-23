@@ -10,12 +10,12 @@ const dot = dotenv.config({ path: ".env" });;
 
 const PORT = dot.PORT || 8000;
 //const PORT = dot.PORT;
-const LOCAL_USER = dot.LOCAL_USER;
-const LOCAL_PASS = dot.LOCAL_PASS;
-const LOCAL_DATA = dot.LOCAL_DATA;
-// const USER = dot.DB_USER;
-// const PASS = dot.DB_PASS;
-// const DATA = dot.DB_DATA;
+// const LOCAL_USER = dot.LOCAL_USER;
+// const LOCAL_PASS = dot.LOCAL_PASS;
+// const LOCAL_DATA = dot.LOCAL_DATA;
+const USER = dot.DB_USER;
+const PASS = dot.DB_PASS;
+const DATA = dot.DB_DATA;
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -40,8 +40,8 @@ const withDB = async (operations, res) => {
     client.close(); 
     
     
-    // const client = await MongoClient.connect(`mongodb://${LOCAL_USER}:${LOCAL_PASS}@localhost:27017/?authSource=admin&readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true });
-    // const db = client.db(`${LOCAL_DATA}`);   
+    // const client = await MongoClient.connect(`mongodb+srv://$:gatzwHTmwsB6wYAs@cluster0.aqewv.mongodb.net/shoestore?authSource=admin&replicaSet=atlas-qs1f2z-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true`, { useNewUrlParser: true, useUnifiedTopology: true });
+    // const db = client.db(`shoestore`);   
     // await operations(db);
     // client.close();     
 
@@ -85,30 +85,40 @@ app.get("/api/product/:name", async (req, res) => {
 app.post("/api/product/:name/likes", async (req, res) => {
   const productName = req.params.name;
 
-  productsInfo[productName].likes += 1;
-  res
-    .status(200)
-    .send(`${productName} now has ${productsInfo[productName].likes} likes`);
+  console.log(productName);
+
+  // productsInfo[productName].likes += 1;
+
+  // res
+  //   .status(200)
+  //   .send(`${productName} now has ${productsInfo[productName].likes} likes`);
 
   //connect to mongo db
   await withDB(async (db) => {
-    const productsInfo = await db
-      .collection("products")
-      .findOne({ name: productName });
+
+    try{
+    const productsInfo = await db.collection("products").findOne({ name: productName });
 
     await db.collection("products").updateOne(
       { name: productName },
       {
-        $set: {
+        '$set': {
           likes: productsInfo.likes + 1,
         },
       }
     );
-    const updatedProductInfo = await db
-      .collection("products")
-      .findOne({ name: productName });
+
+    const updatedProductInfo = await db.collection("products").findOne({ name: productName });
     res.status(200).json(updatedProductInfo);
+
+    }catch(err){
+      console.log(err)
+
+    }
   }, res);
+
+  
+
 });
 
 app.get("*", (req, res) => {
