@@ -5,7 +5,7 @@ import bodyParser from "body-parser";
 import { MongoClient } from "mongodb"; 
 import path from "path";
 
-const dot = dotenv.config({ path: ".env" });;
+const dot = dotenv.config({ path: ".env" });
 
 const PORT = dot.PORT || 8000;
 const USER = dot.DB_USER;
@@ -26,7 +26,6 @@ app.use(express.static(path.join(__dirname, "/build")));
 const withDB = async (operations, res) => {
 
   try {
-
     // const client = await MongoClient.connect(`mongodb://localhost:27017`, { useNewUrlParser: true, useUnifiedTopology: true });
     // const db = client.db('shoestore');   
     // await operations(db);
