@@ -3,14 +3,12 @@
 import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient } from "mongodb"; 
+//import bcrypt from 'bcrypt';
+//import jwt from 'jsonwebtoken';
 import path from "path";
 
 //const dot = dotenv.config({ path: ".env" });
-
 const PORT = process.env.PORT || 8000;
-const DB_USER = process.env.DB_USER;
-const DB_PASS = process.env.DB_PASS;
-const DB_DATA = process.env.DB_DATA;
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -31,7 +29,9 @@ const withDB = async (operations, res) => {
     // await operations(db);
     // client.close();     
     
-    const client = await MongoClient.connect(`mongodb+srv://${DB_USER}:${DB_PASS}@cluster0.aqewv.mongodb.net/${DB_DATA}?retryWrites=true&w=majority`, { useNewUrlParser: true, useUnifiedTopology: true });
+    const client = await MongoClient.connect(
+      process.env.DB_USER && process.env.DB_PASS ?
+      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`:`mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true });
     const db = client.db(`shoestore`);   
     await operations(db);
     client.close();  
@@ -42,19 +42,57 @@ const withDB = async (operations, res) => {
   }
 };
 
-app.get("/api/data/", async (req, res) => {
+// get products
+app.get("/api/products", async (req, res) => {
   //connect to mongo db
   await withDB(async (db) => {
     const productsInfo = await db.collection("products").find({});
     const results = await productsInfo.toArray();
     // Process the results
     if (results.length > 0) {
-      results.forEach((result, i) => {
-        console.log(result);
+      
+        console.log(`${results.length} customers found`);
         // Here you could build your html or put the results in some other data structure you want to work with
-      });
+
     } else {
       console.log(`No customers found`);
+    }
+    res.status(200).json(results); //use json instead of send
+  }, res);
+});
+
+// get search bar data
+app.get("/api/searchbardata", async (req, res) => {
+  //connect to mongo db
+  await withDB(async (db) => {
+    const searchbarInfo = await db.collection("searchBarData").find({});
+    const results = await searchbarInfo.toArray();
+    // Process the results
+    if (results.length > 0) {      
+        console.log(`${results.length} search data found`);
+        // Here you could build your html or put the results in some other data structure you want to work with
+
+    } else {
+      console.log(`No search data found`);
+    }
+    res.status(200).json(results); //use json instead of send
+  }, res);
+});
+
+// get select filter data
+app.get("/api/selectdata", async (req, res) => {
+  //connect to mongo db
+  await withDB(async (db) => {
+    const selectbarInfo = await db.collection("selectBarData").find({});
+    const results = await selectbarInfo.toArray();
+    // Process the results
+    if (results.length > 0) {
+      
+        console.log(`${results.length} select data found`);
+        // Here you could build your html or put the results in some other data structure you want to work with
+
+    } else {
+      console.log(`No select data found`);
     }
     res.status(200).json(results); //use json instead of send
   }, res);
@@ -101,8 +139,34 @@ app.post("/api/product/:name/likes", async (req, res) => {
 
 });
 
+
+// app.post("/api/register", async (req, res) => {
+//   //connect to mongo db
+//   await withDB(async (db) => {
+//     try{
+
+//       const newUser = req.body;
+//       newUser.hashPassword = bcrypt.hashSync(req.body.password, 10);
+//       await db.collection("products").save(newUser ,(err, user) => {
+//           if (err) {
+//               return res.status(400).send({
+//                   message: err
+//               });
+//           } else {
+//               user.hashPassword = undefined;
+//               return res.json(user); 
+//           }
+//       })
+
+//     }catch(err){
+//       console.log(err)
+
+//     }
+//   }, res);
+// });
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "/build/index.html"));
 });
 
-app.listen(PORT, () => console.log("Server is listening on port 8000"));
+app.listen(PORT || 8000, () => console.log(`server is listening ${PORT}`));
