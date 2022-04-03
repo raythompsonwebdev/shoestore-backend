@@ -26,12 +26,8 @@ const withDB = async (operations, res) => {
 
   try {
     const client = await MongoClient.connect(
-
-      
-      //`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`
-      `mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true }
-      // process.env.DB_USER && process.env.DB_PASS ?
-      // `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`:`mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 }
+       process.env.DB_USER && process.env.DB_PASS ?
+       `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`:`mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true }
       );
     const db = client.db(`shoestore`);   
     await operations(db);
