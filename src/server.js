@@ -1,13 +1,13 @@
 //es6
-//import dotenv from 'dotenv';
+import dotenv from 'dotenv';
 import express from "express";
 import bodyParser from "body-parser";
-import { MongoClient } from "mongodb"; 
+import { MongoClient} from "mongodb"; 
 //import bcrypt from 'bcrypt';
 //import jwt from 'jsonwebtoken';
 import path from "path";
 
-//const dot = dotenv.config({ path: ".env" });
+const dot = dotenv.config({ path: ".env" });
 const PORT = process.env.PORT || 8000;
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
@@ -20,18 +20,19 @@ app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "/build")));
 
+
 //main connect to mongo db
 const withDB = async (operations, res) => {
 
   try {
-    // const client = await MongoClient.connect(`mongodb://localhost:27017`, { useNewUrlParser: true, useUnifiedTopology: true });
-    // const db = client.db('shoestore');   
-    // await operations(db);
-    // client.close();     
-    
     const client = await MongoClient.connect(
-      process.env.DB_USER && process.env.DB_PASS ?
-      `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`:`mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true });
+
+      
+      //`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`
+      `mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true }
+      // process.env.DB_USER && process.env.DB_PASS ?
+      // `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`:`mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 }
+      );
     const db = client.db(`shoestore`);   
     await operations(db);
     client.close();  
@@ -61,7 +62,7 @@ app.get("/api/products", async (req, res) => {
   }, res);
 });
 
-// get search bar data
+// get search bar options data
 app.get("/api/searchbardata", async (req, res) => {
   //connect to mongo db
   await withDB(async (db) => {
@@ -79,7 +80,7 @@ app.get("/api/searchbardata", async (req, res) => {
   }, res);
 });
 
-// get select filter data
+// get select options data
 app.get("/api/selectdata", async (req, res) => {
   //connect to mongo db
   await withDB(async (db) => {
@@ -98,6 +99,7 @@ app.get("/api/selectdata", async (req, res) => {
   }, res);
 });
 
+//// get product by type
 app.get("/api/product/:name", async (req, res) => {
   const productName = req.params.name;
 
@@ -110,6 +112,7 @@ app.get("/api/product/:name", async (req, res) => {
   }, res);
 });
 
+// add likes to products
 app.post("/api/product/:name/likes", async (req, res) => {
   const productName = req.params.name;
 
@@ -138,7 +141,6 @@ app.post("/api/product/:name/likes", async (req, res) => {
   
 
 });
-
 
 // app.post("/api/register", async (req, res) => {
 //   //connect to mongo db
