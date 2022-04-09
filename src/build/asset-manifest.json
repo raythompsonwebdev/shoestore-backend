@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "/static/css/main.05f8ddab.css",
-    "main.js": "/static/js/main.6fdf1c33.js",
+    "main.css": "/static/css/main.c7c78b07.css",
+    "main.js": "/static/js/main.a78c8474.js",
     "static/media/bg-img.png": "/static/media/bg-img.15b253d26859f5306910.png",
     "static/media/old-standard-tt-v7-latin-700.svg": "/static/media/old-standard-tt-v7-latin-700.edd7c67d4632c76a5d81.svg",
     "static/media/old-standard-tt-v7-latin-regular.svg": "/static/media/old-standard-tt-v7-latin-regular.16b6b5ea4d279883232a.svg",
@@ -15,17 +15,17 @@
     "static/media/old-standard-tt-v7-latin-700.eot": "/static/media/old-standard-tt-v7-latin-700.312d4e6b3a74690ec53c.eot",
     "static/media/old-standard-tt-v7-latin-regular.eot": "/static/media/old-standard-tt-v7-latin-regular.185c613d99472b9130fa.eot",
     "static/media/kids-trainer.png": "/static/media/kids-trainer.5a41e36d5578639da00f.png",
-    "static/media/bannerimage.jpg": "/static/media/bannerimage.9e4893e03d4abd8143f8.jpg",
     "static/media/shoe-store-logo.png": "/static/media/shoe-store-logo.52ea9f64c0aa3c9fc56f.png",
     "static/media/old-standard-tt-v7-latin-700.woff2": "/static/media/old-standard-tt-v7-latin-700.dd4f5002f4e69a7b1593.woff2",
     "static/media/old-standard-tt-v7-latin-regular.woff2": "/static/media/old-standard-tt-v7-latin-regular.2519dff954f1f85ffa49.woff2",
     "static/media/fur-lined-ladies-boot.png": "/static/media/fur-lined-ladies-boot.84316b11f46832f76826.png",
+    "static/media/bannerimage.jpg": "/static/media/bannerimage.521c9c62e75dc98acba8.jpg",
     "index.html": "/index.html",
-    "main.05f8ddab.css.map": "/static/css/main.05f8ddab.css.map",
-    "main.6fdf1c33.js.map": "/static/js/main.6fdf1c33.js.map"
+    "main.c7c78b07.css.map": "/static/css/main.c7c78b07.css.map",
+    "main.a78c8474.js.map": "/static/js/main.a78c8474.js.map"
   },
   "entrypoints": [
-    "static/css/main.05f8ddab.css",
-    "static/js/main.6fdf1c33.js"
+    "static/css/main.c7c78b07.css",
+    "static/js/main.a78c8474.js"
   ]
 }
