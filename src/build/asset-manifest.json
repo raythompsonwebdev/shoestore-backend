@@ -1,13 +1,12 @@
 {
   "files": {
-    "main.css": "/static/css/main.c7c78b07.css",
-    "main.js": "/static/js/main.86a31f62.js",
+    "main.css": "/static/css/main.629b7c6d.css",
+    "main.js": "/static/js/main.7bfe1801.js",
     "static/media/bg-img.png": "/static/media/bg-img.15b253d26859f5306910.png",
     "static/media/old-standard-tt-v7-latin-700.svg": "/static/media/old-standard-tt-v7-latin-700.edd7c67d4632c76a5d81.svg",
     "static/media/old-standard-tt-v7-latin-regular.svg": "/static/media/old-standard-tt-v7-latin-regular.16b6b5ea4d279883232a.svg",
     "static/media/old-standard-tt-v7-latin-700.ttf": "/static/media/old-standard-tt-v7-latin-700.a8187e1e7dacc10ae6f0.ttf",
     "static/media/old-standard-tt-v7-latin-regular.ttf": "/static/media/old-standard-tt-v7-latin-regular.2129441b86c90612131a.ttf",
-    "static/media/form-bg-comp.png": "/static/media/form-bg-comp.ebe224320126dac1e564.png",
     "static/media/fur-lined-hiking-boot.png": "/static/media/fur-lined-hiking-boot.368bc28dfb95f0a5fc0f.png",
     "static/media/basket-ball-shoe.png": "/static/media/basket-ball-shoe.cd813f5042ff8d649092.png",
     "static/media/old-standard-tt-v7-latin-700.woff": "/static/media/old-standard-tt-v7-latin-700.25c919f557edaf84518f.woff",
@@ -21,11 +20,11 @@
     "static/media/fur-lined-ladies-boot.png": "/static/media/fur-lined-ladies-boot.84316b11f46832f76826.png",
     "static/media/bannerimage.jpg": "/static/media/bannerimage.521c9c62e75dc98acba8.jpg",
     "index.html": "/index.html",
-    "main.c7c78b07.css.map": "/static/css/main.c7c78b07.css.map",
-    "main.86a31f62.js.map": "/static/js/main.86a31f62.js.map"
+    "main.629b7c6d.css.map": "/static/css/main.629b7c6d.css.map",
+    "main.7bfe1801.js.map": "/static/js/main.7bfe1801.js.map"
   },
   "entrypoints": [
-    "static/css/main.c7c78b07.css",
-    "static/js/main.86a31f62.js"
+    "static/css/main.629b7c6d.css",
+    "static/js/main.7bfe1801.js"
   ]
 }
