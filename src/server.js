@@ -59,6 +59,12 @@ app.use(express.static(path.join(__dirname, "/build")));
 //   algorithms: ["RS256"],
 // });
 
+// app.get("/api/external", checkJwt, (req, res) => {
+//   res.send({
+//     msg: "Your access token was successfully validated!",
+//   });
+// });
+
 
 //main connect to mongo db
 const withDB = async (operations, res) => {
@@ -77,13 +83,6 @@ const withDB = async (operations, res) => {
     process.exit(1);
   }
 };
-
-//protected rout example
-// app.get("/api/external", checkJwt, (req, res) => {
-//   res.send({
-//     msg: "Your access token was successfully validated!",
-//   });
-//});
 
 // get products
 app.get("/api/products", async (req, res) => {
