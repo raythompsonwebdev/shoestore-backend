@@ -3,13 +3,6 @@ import dotenv from 'dotenv';
 import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient} from "mongodb"; 
-// import bcrypt from 'bcrypt';
-// const cors = require("cors");
-// import morgan from "morgan";
-// import helmet from "helmet";
-// import jwt  from "express-jwt";
-// import jwksRsa  from "jwks-rsa";
-// import authConfig from "auth_config.json";
 import path from "path";
 
 const dot = dotenv.config({ path: ".env" });
@@ -17,20 +10,6 @@ const PORT = process.env.PORT || 8000;
 
 // const appPort = process.env.SERVER_PORT || 3000;
 // const appOrigin = authConfig.appOrigin || `http://localhost:${appPort}`;
-
-// if (
-//   !authConfig.domain ||
-//   !authConfig.audience ||
-//   authConfig.audience === "YOUR_API_IDENTIFIER"
-// ) {
-//   // eslint-disable-next-line no-console
-//   console.log(
-//     "Exiting: Please make sure that auth_config.json is in place and populated with valid domain and audience values"
-//   );
-
-//   // eslint-disable-next-line no-process-exit
-//   process.exit();
-// }
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -41,29 +20,6 @@ app.use(bodyParser.json());
 app.use(express.json());
 
 app.use(express.static(path.join(__dirname, "/build")));
-
-// app.use(morgan("dev"));
-// app.use(helmet());
-// app.use(cors({ origin: appOrigin }));
-
-// const checkJwt = jwt({
-//   secret: jwksRsa.expressJwtSecret({
-//     cache: true,
-//     rateLimit: true,
-//     jwksRequestsPerMinute: 5,
-//     jwksUri: `https://${authConfig.domain}/.well-known/jwks.json`,
-//   }),
-
-//   audience: authConfig.audience,
-//   issuer: `https://${authConfig.domain}/`,
-//   algorithms: ["RS256"],
-// });
-
-// app.get("/api/external", checkJwt, (req, res) => {
-//   res.send({
-//     msg: "Your access token was successfully validated!",
-//   });
-// });
 
 
 //main connect to mongo db
