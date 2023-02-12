@@ -8,17 +8,10 @@ import path from "path";
 const dot = dotenv.config({ path: ".env" });
 const PORT = process.env.PORT || 8000;
 
-// const appPort = process.env.SERVER_PORT || 3000;
-// const appOrigin = authConfig.appOrigin || `http://localhost:${appPort}`;
-
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
-
 const app = express();
-
 app.use(bodyParser.json());
-
 app.use(express.json());
-
 app.use(express.static(path.join(__dirname, "/build")));
 
 
@@ -83,6 +76,25 @@ app.get("/api/selectdata", async (req, res) => {
   await withDB(async (db) => {
     const selectbarInfo = await db.collection("selectBarData").find({});
     const results = await selectbarInfo.toArray();
+    // Process the results
+    if (results.length > 0) {
+      
+        console.log(`${results.length} select data found`);
+        // Here you could build your html or put the results in some other data structure you want to work with
+
+    } else {
+      console.log(`No select data found`);
+    }
+    res.status(200).json(results); //use json instead of send
+  }, res);
+});
+
+// get select accordion data
+app.get("/api/accordiondata", async (req, res) => {
+  //connect to mongo db
+  await withDB(async (db) => {
+    const accordionInfo = await db.collection("accordianData").find({});
+    const results = await accordionInfo.toArray();
     // Process the results
     if (results.length > 0) {
       
