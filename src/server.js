@@ -4,12 +4,15 @@ import express from "express";
 import bodyParser from "body-parser";
 import { MongoClient} from "mongodb"; 
 import path from "path";
+import cors from 'cors';
 
 const dot = dotenv.config({ path: ".env" });
 const PORT = process.env.PORT || 8000;
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
+
+app.use(cors({origin:"http://localhost:3000"}));
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "/build")));
@@ -146,8 +149,6 @@ app.post("/api/product/:name/likes", async (req, res) => {
 
     }
   }, res);
-
-  
 
 });
 
