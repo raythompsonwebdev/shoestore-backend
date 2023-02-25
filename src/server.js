@@ -1,42 +1,122 @@
 //es6
-import dotenv from 'dotenv';
+import dotenv from "dotenv";
 import express from "express";
 import bodyParser from "body-parser";
-import { MongoClient} from "mongodb"; 
+import { MongoClient } from "mongodb";
 import path from "path";
-import cors from 'cors';
-
-const dot = dotenv.config({ path: ".env" });
-const PORT = process.env.PORT || 8000;
+import cors from "cors";
+import morgan from "morgan";
+import helmet from "helmet";
+//import { expressjwt } from "express-jwt";
+//import jwksRsa from "jwks-rsa";
+import { auth, requiredScopes } from "express-oauth2-jwt-bearer";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
 
-app.use(cors({origin:"http://localhost:3000"}));
-app.use(bodyParser.json());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, "/build")));
+//cors
+// app.use(cors({ origin: "http://localhost:3000" }));
 
+//bodyparser
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extendeded: true }));
+
+//json parser
+app.use(express.json());
+
+//dot env
+const dot = dotenv.config({ path: ".env" });
+
+const PORT = process.env.PORT || 8000;
+const baseUrl = process.env.AUTH0_BASE_URL;
+const issuerBaseUrl = process.env.AUTH0_ISSUER_BASE_URL;
+const audience = process.env.AUTH0_AUDIENCE;
+
+if (!issuerBaseUrl || !audience) {
+  throw "Make sure you have ISSUER_BASE_URL, and AUDIENCE in your .env file";
+}
+
+if (!audience) {
+  console.log(
+    "AUTH0_AUDIENCE not set in .env.local. Shutting down API server."
+  );
+  process.exit(1);
+}
+
+app.use(morgan("dev"));
+app.use(helmet());
+app.use(cors({ origin: baseUrl }));
+
+/* Auth0 */
+
+const jwtCheck = auth({
+  audience: "shoestoreapp",
+  issuerBaseURL: "https://dev-lwmhuvt9.eu.auth0.com/",
+  tokenSigningAlg: "RS256",
+});
+
+// enforce on all endpoints
+// app.use(jwtCheck);
+
+// const checkJwt = jwt({
+//   secret: jwksRsa.expressJwtSecret({
+//     cache: true,
+//     rateLimit: true,
+//     jwksRequestsPerMinute: 5,
+//     jwksUri: `${issuerBaseUrl}/.well-known/jwks.json`,
+//   }),
+//   audience: audience,
+//   issuer: `${issuerBaseUrl}/`,
+//   algorithms: ["RS256"],
+// });
+
+// // This route doesn't need authentication
+// app.get("/api/public", function (req, res) {
+//   res.json({
+//     message:
+//       "Hello from a public endpoint! You don't need to be authenticated to see this.",
+//   });
+// });
+
+// // This route needs authentication
+// app.get("/api/private", checkJwt, function (req, res) {
+//   res.json({
+//     message:
+//       "Hello from a private endpoint! You need to be authenticated to see this.",
+//   });
+// });
+
+const checkScopes = requiredScopes("read:products");
+
+app.get("/api/private-scoped", checkScopes, function (req, res) {
+  res.json({
+    message:
+      "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.",
+  });
+});
+
+//static paths for images, fonts etc in build folder
+app.use(express.static(path.join(__dirname, "/build")));
 
 //main connect to mongo db
 const withDB = async (operations, res) => {
-
   try {
     const client = await MongoClient.connect(
-       process.env.DB_USER && process.env.DB_PASS ?
-       `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`:`mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`, { useNewUrlParser: true, useUnifiedTopology: true }
-      );
-    const db = client.db(`shoestore`);   
+      process.env.DB_USER && process.env.DB_PASS
+        ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`
+        : `mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`,
+      { useNewUrlParser: true, useUnifiedTopology: true }
+    );
+    const db = client.db(`shoestore`);
     await operations(db);
-    client.close();  
-    
+    client.close();
   } catch (err) {
     res.status(500).send({ message: "Database Error", err });
     process.exit(1);
   }
 };
 
-// get products
+// get all products
 app.get("/api/products", async (req, res) => {
   //connect to mongo db
   await withDB(async (db) => {
@@ -44,13 +124,12 @@ app.get("/api/products", async (req, res) => {
     const results = await productsInfo.toArray();
     // Process the results
     if (results.length > 0) {
-      
-        console.log(`${results.length} customers found`);
-        // Here you could build your html or put the results in some other data structure you want to work with
-
+      console.log(`${results.length} customers found`);
+      // Here you could build your html or put the results in some other data structure you want to work with
     } else {
       console.log(`No customers found`);
     }
+    //return results
     res.status(200).json(results); //use json instead of send
   }, res);
 });
@@ -62,10 +141,9 @@ app.get("/api/searchbardata", async (req, res) => {
     const searchbarInfo = await db.collection("searchBarData").find({});
     const results = await searchbarInfo.toArray();
     // Process the results
-    if (results.length > 0) {      
-        console.log(`${results.length} search data found`);
-        // Here you could build your html or put the results in some other data structure you want to work with
-
+    if (results.length > 0) {
+      console.log(`${results.length} search data found`);
+      // Here you could build your html or put the results in some other data structure you want to work with
     } else {
       console.log(`No search data found`);
     }
@@ -81,10 +159,8 @@ app.get("/api/selectdata", async (req, res) => {
     const results = await selectbarInfo.toArray();
     // Process the results
     if (results.length > 0) {
-      
-        console.log(`${results.length} select data found`);
-        // Here you could build your html or put the results in some other data structure you want to work with
-
+      console.log(`${results.length} select data found`);
+      // Here you could build your html or put the results in some other data structure you want to work with
     } else {
       console.log(`No select data found`);
     }
@@ -100,10 +176,8 @@ app.get("/api/accordiondata", async (req, res) => {
     const results = await accordionInfo.toArray();
     // Process the results
     if (results.length > 0) {
-      
-        console.log(`${results.length} select data found`);
-        // Here you could build your html or put the results in some other data structure you want to work with
-
+      console.log(`${results.length} select data found`);
+      // Here you could build your html or put the results in some other data structure you want to work with
     } else {
       console.log(`No select data found`);
     }
@@ -111,7 +185,7 @@ app.get("/api/accordiondata", async (req, res) => {
   }, res);
 });
 
-//// get product by type
+//// get product by name
 app.get("/api/product/:name", async (req, res) => {
   const productName = req.params.name;
 
@@ -130,26 +204,27 @@ app.post("/api/product/:name/likes", async (req, res) => {
 
   //connect to mongo db
   await withDB(async (db) => {
-    try{
-    const productsInfo = await db.collection("products").findOne({ name: productName });
+    try {
+      const productsInfo = await db
+        .collection("products")
+        .findOne({ name: productName });
 
-    await db.collection("products").updateOne(
-      { name: productName },
-      {
-        '$set': {
-          likes: productsInfo.likes + 1,
-        },
-      }
-    );
-    const updatedProductInfo = await db.collection("products").findOne({ name: productName });
-    res.status(200).json(updatedProductInfo);
-
-    }catch(err){
-      console.log(err)
-
+      await db.collection("products").updateOne(
+        { name: productName },
+        {
+          $set: {
+            likes: productsInfo.likes + 1,
+          },
+        }
+      );
+      const updatedProductInfo = await db
+        .collection("products")
+        .findOne({ name: productName });
+      res.status(200).json(updatedProductInfo);
+    } catch (err) {
+      console.log(err);
     }
   }, res);
-
 });
 
 // register users
@@ -167,7 +242,7 @@ app.post("/api/product/:name/likes", async (req, res) => {
 //               });
 //           } else {
 //               user.hashPassword = undefined;
-//               return res.json(user); 
+//               return res.json(user);
 //           }
 //       })
 
@@ -178,8 +253,12 @@ app.post("/api/product/:name/likes", async (req, res) => {
 //   }, res);
 // });
 
+//test if build works
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "/build/index.html"));
 });
 
 app.listen(PORT || 8000, () => console.log(`server is listening ${PORT}`));
+
+// const server = app.listen(port, () => console.log(`API Server listening on port ${port}`));
+// process.on('SIGINT', () => server.close());
