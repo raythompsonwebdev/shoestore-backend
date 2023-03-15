@@ -1,25 +1,15 @@
 //es6
 import dotenv from "dotenv";
 import express from "express";
-import bodyParser from "body-parser";
 import { MongoClient } from "mongodb";
 import path from "path";
 import cors from "cors";
-import morgan from "morgan";
-import helmet from "helmet";
-//import { expressjwt } from "express-jwt";
-//import jwksRsa from "jwks-rsa";
+// import morgan from "morgan";
+// import helmet from "helmet";
 import { auth, requiredScopes } from "express-oauth2-jwt-bearer";
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname);
 const app = express();
-
-//cors
-// app.use(cors({ origin: "http://localhost:3000" }));
-
-//bodyparser
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extendeded: true }));
 
 //json parser
 app.use(express.json());
@@ -43,56 +33,33 @@ if (!audience) {
   process.exit(1);
 }
 
-app.use(morgan("dev"));
-app.use(helmet());
+// app.use(morgan("dev"));
+// app.use(helmet());
+
 app.use(cors({ origin: baseUrl }));
 
-/* Auth0 */
-
-const jwtCheck = auth({
-  audience: "shoestoreapp",
-  issuerBaseURL: "https://dev-lwmhuvt9.eu.auth0.com/",
-  tokenSigningAlg: "RS256",
+const checkJwt = auth({
+  audience: `${audience}`,
+  issuerBaseURL: `${issuerBaseUrl}`,
 });
 
-// enforce on all endpoints
-// app.use(jwtCheck);
-
-// const checkJwt = jwt({
-//   secret: jwksRsa.expressJwtSecret({
-//     cache: true,
-//     rateLimit: true,
-//     jwksRequestsPerMinute: 5,
-//     jwksUri: `${issuerBaseUrl}/.well-known/jwks.json`,
-//   }),
-//   audience: audience,
-//   issuer: `${issuerBaseUrl}/`,
-//   algorithms: ["RS256"],
-// });
-
-// // This route doesn't need authentication
-// app.get("/api/public", function (req, res) {
-//   res.json({
-//     message:
-//       "Hello from a public endpoint! You don't need to be authenticated to see this.",
-//   });
-// });
-
-// // This route needs authentication
-// app.get("/api/private", checkJwt, function (req, res) {
-//   res.json({
-//     message:
-//       "Hello from a private endpoint! You need to be authenticated to see this.",
-//   });
-// });
+// This route needs authentication
+app.get("/api/private", checkJwt, function (req, res) {
+  res.send("Secured Resource");
+});
 
 const checkScopes = requiredScopes("read:products");
 
-app.get("/api/private-scoped", checkScopes, function (req, res) {
+app.get("/api/private-scoped", checkJwt, checkScopes, function (req, res) {
   res.json({
     message:
       "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.",
   });
+});
+
+app.use(function (err, req, res, next) {
+  console.error(err.stack);
+  return res.set(err.headers).status(err.status).json({ message: err.message });
 });
 
 //static paths for images, fonts etc in build folder
@@ -201,7 +168,6 @@ app.get("/api/product/:name", async (req, res) => {
 // add likes to products
 app.post("/api/product/:name/likes", async (req, res) => {
   const productName = req.params.name;
-
   //connect to mongo db
   await withDB(async (db) => {
     try {
@@ -254,11 +220,9 @@ app.post("/api/product/:name/likes", async (req, res) => {
 // });
 
 //test if build works
+
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname + "/build/index.html"));
 });
 
 app.listen(PORT || 8000, () => console.log(`server is listening ${PORT}`));
-
-// const server = app.listen(port, () => console.log(`API Server listening on port ${port}`));
-// process.on('SIGINT', () => server.close());
