@@ -22,8 +22,9 @@ const PORT = process.env.PORT || 8000;
 const baseUrl = process.env.AUTH0_BASE_URL;
 const issuerBaseUrl = process.env.AUTH0_ISSUER_BASE_URL;
 const audience = process.env.AUTH0_AUDIENCE;
-const authsecret = process.env.AUTH0_SECRET;
-const clientID = process.env.AUTH0_CLIENT_ID;
+const secret = process.env.AUTH0_SECRET;
+const clientid = process.env.AUTH0_CLIENT_ID;
+const clientsecret = process.env.AUTH0_CLIENT_SECRET;
 
 const app = express();
 //json parser
@@ -53,13 +54,30 @@ if (!audience) {
   process.exit(1);
 }
 
+// const configJWT = {
+//   clientID: clientsecret,
+//   authRequired: false,
+//   authorizationParams: {
+//     response_type: 'code',
+//   },
+//   clientAuthMethod: secret,
+// }
+
 const config = {
   authRequired: false,
   auth0Logout: true,
   baseURL: baseUrl,
-  clientID: clientID,
+  clientID: clientid,
   issuerBaseURL: issuerBaseUrl,
-  secret: authsecret,
+  secret: secret,
+  routes: {
+    // Pass custom options to the login method by overriding the default login route
+    login: false,
+    // Pass a custom path to the postLogoutRedirect to redirect users to a different
+    // path after login, this should be registered on your authorization server.
+    postLogoutRedirect: "/logout",
+    callback: false,
+  },
 };
 
 // check if local port is being used
@@ -111,8 +129,7 @@ const withDB = async (operations, res) => {
     // );
 
     const client = await MongoClient.connect(
-      "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.1.4",
-      { useNewUrlParser: true, useUnifiedTopology: true }
+      "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.1.4"
     );
 
     const db = client.db(`shoestore`);
@@ -126,11 +143,12 @@ const withDB = async (operations, res) => {
 
 /* test API*/
 
-// app.get("/api/private-scoped", checkJwt, (req, res) => {
-//   res.json({
-//     message:
-//       "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.",
-//   });
+// app.get("/api/private-scoped", (req, res) => {
+//   if (req.oidc.isAuthenticated()) {
+//     res.send(`hello ${req.oidc.user.sub} <a href="/logout">logout</a>`);
+//   } else {
+//     res.send('<a href="/login">login</a>');
+//   }
 // });
 
 // This route needs authentication
@@ -253,6 +271,26 @@ app.post("/api/product/:name/likes", async (req, res) => {
     }
   }, res);
 });
+
+app.get("/login", (req, res) =>
+  res.oidc.login({
+    returnTo: "/profile",
+    authorizationParams: {
+      redirect_uri: "http://localhost:3000/callback",
+    },
+  })
+);
+
+// app.get('/callback', (req, res) =>
+//   res.oidc.callback({
+//     redirectUri: 'http://localhost:3000/callback',
+//   })
+// );
+
+// app.get('/', async (req, res) => {
+//   const userInfo = await req.oidc.fetchUserInfo();
+//   // ...
+// });
 
 // register users
 // app.post("/api/register", async (req, res) => {
