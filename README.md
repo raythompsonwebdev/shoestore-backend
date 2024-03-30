@@ -2,9 +2,7 @@
 
 ## Description
 
-Backend for Ecommerce Web application based on photoshop website template design downloaded from website [php.jabber.com](https://www.phpjabbers.com/).
-
-Built using Node and Express. Connects to MungoDB database.
+Backend for Shoestore Web application based on photoshop website template design downloaded from website [php.jabber.com](https://www.phpjabbers.com/).
 
 ## Tools
 
@@ -14,6 +12,8 @@ Built using Node and Express. Connects to MungoDB database.
 - [NodeMon](https://www.npmjs.com/package/nodemon)
 - [DotEnv](https://www.npmjs.com/package/dotenv)
 - [babel](https://babeljs.io/)
+- [auth0](https://manage.auth0.com/)
+- [express-openid-connect](https://www.npmjs.com/package/express-openid-connect)
 
 ## Getting Started
 
@@ -33,7 +33,7 @@ This is an example of how to list things you need to use the software and how to
 
 1. Clone the repo
    ```sh
-   git clone https://github.com/raythompsonwebdev/travelagencyvuebackend.git
+   git clone git@github.com:raythompsonwebdev/shoestore-backend.git
    ```
 2. Install NPM packages
    ```sh
@@ -43,7 +43,7 @@ This is an example of how to list things you need to use the software and how to
 ### Start development server
 
 ```sh
-$ npx babel-node src/server.js
+$ npx nodemon --exec npx babel-node src/server.js
 or
 $ npm run dev
 ```
@@ -51,7 +51,7 @@ $ npm run dev
 ### test production server
 
 ```sh
-$ node server.js
+$ node src/server.js
 or
 $ npm run start
 ```

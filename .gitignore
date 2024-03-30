@@ -1,7 +1,5 @@
 node_modules
 .env
-src/test.js
-src/auth_config.json
 src/build/
-ProcFile
+Local-HTTPS.MD
 

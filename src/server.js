@@ -1,26 +1,46 @@
-//es6
-import dotenv from "dotenv";
+import "dotenv/config";
 import express from "express";
 import { MongoClient } from "mongodb";
 import path from "path";
 import cors from "cors";
+import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
+import { fileURLToPath } from "url";
 // import morgan from "morgan";
 // import helmet from "helmet";
-import { auth, requiredScopes } from "express-oauth2-jwt-bearer";
+// const jwt = require("express-jwt");
+// const jwksRsa = require("jwks-rsa");
+// import { auth as jwtauth } from "express-oauth2-jwt-bearer";
+import pkg from "express-openid-connect";
+const { auth, requiresAuth } = pkg;
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname);
-const app = express();
-
-//json parser
-app.use(express.json());
-
-//dot env
-const dot = dotenv.config({ path: ".env" });
+//set up file paths for static files - updated
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 8000;
 const baseUrl = process.env.AUTH0_BASE_URL;
 const issuerBaseUrl = process.env.AUTH0_ISSUER_BASE_URL;
 const audience = process.env.AUTH0_AUDIENCE;
+const authsecret = process.env.AUTH0_SECRET;
+const clientID = process.env.AUTH0_CLIENT_ID;
+
+const app = express();
+//json parser
+app.use(express.json());
+
+// for parsing application/xwww-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// for parsing cookies
+app.use(cookieParser(process.env.AUTH0_SECRET));
+
+// app.use(morgan("dev"));
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: false,
+//   })
+// );
 
 if (!issuerBaseUrl || !audience) {
   throw "Make sure you have ISSUER_BASE_URL, and AUDIENCE in your .env file";
@@ -33,47 +53,68 @@ if (!audience) {
   process.exit(1);
 }
 
-// app.use(morgan("dev"));
-// app.use(helmet());
+const config = {
+  authRequired: false,
+  auth0Logout: true,
+  baseURL: baseUrl,
+  clientID: clientID,
+  issuerBaseURL: issuerBaseUrl,
+  secret: authsecret,
+};
 
+// check if local port is being used
+if (
+  !config.baseURL &&
+  !process.env.BASE_URL &&
+  process.env.PORT &&
+  process.env.NODE_ENV !== "production"
+) {
+  config.baseURL = `http://localhost:${PORT}`;
+}
+
+// auth router attaches /login, /logout, and /callback routes to the baseURL
+app.use(auth(config));
+
+// cors
 app.use(cors({ origin: baseUrl }));
 
-const checkJwt = auth({
-  audience: `${audience}`,
-  issuerBaseURL: `${issuerBaseUrl}`,
+// Middleware to make the `user` object available for all views
+app.use(function (req, res, next) {
+  res.locals.user = req.oidc.user;
+  next();
 });
 
-// This route needs authentication
-app.get("/api/private", checkJwt, function (req, res) {
-  res.send("Secured Resource");
-});
+// const checkJwt = jwt({
+//   secret: jwksRsa.expressJwtSecret({
+//     cache: true,
+//     rateLimit: true,
+//     jwksRequestsPerMinute: 5,
+//     jwksUri: `https://${authConfig.domain}/.well-known/jwks.json`,
+//   }),
 
-const checkScopes = requiredScopes("read:products");
-
-app.get("/api/private-scoped", checkJwt, checkScopes, function (req, res) {
-  res.json({
-    message:
-      "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.",
-  });
-});
-
-app.use(function (err, req, res, next) {
-  console.error(err.stack);
-  return res.set(err.headers).status(err.status).json({ message: err.message });
-});
+//   audience: authConfig.audience,
+//   issuer: `https://${authConfig.domain}/`,
+//   algorithms: ["RS256"],
+// });
 
 //static paths for images, fonts etc in build folder
-app.use(express.static(path.join(__dirname, "/build")));
+app.use(express.static(path.join(__dirname, "static")));
 
 //main connect to mongo db
 const withDB = async (operations, res) => {
   try {
+    // const client = await MongoClient.connect(
+    //   process.env.DB_USER && process.env.DB_PASS
+    //     ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`
+    //     : `mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`,
+    //   { useNewUrlParser: true, useUnifiedTopology: true }
+    // );
+
     const client = await MongoClient.connect(
-      process.env.DB_USER && process.env.DB_PASS
-        ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`
-        : `mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`,
+      "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.1.4",
       { useNewUrlParser: true, useUnifiedTopology: true }
     );
+
     const db = client.db(`shoestore`);
     await operations(db);
     client.close();
@@ -82,6 +123,26 @@ const withDB = async (operations, res) => {
     process.exit(1);
   }
 };
+
+/* test API*/
+
+// app.get("/api/private-scoped", checkJwt, (req, res) => {
+//   res.json({
+//     message:
+//       "Hello from a private endpoint! You need to be authenticated and have a scope of read:messages to see this.",
+//   });
+// });
+
+// This route needs authentication
+app.get("/api/private", (req, res) => {
+  res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
+});
+
+app.get("/api/profile", requiresAuth(), (req, res) => {
+  res.send(JSON.stringify(req.oidc.user));
+});
+
+/* test API*/
 
 // get all products
 app.get("/api/products", async (req, res) => {
@@ -221,8 +282,25 @@ app.post("/api/product/:name/likes", async (req, res) => {
 
 //test if build works
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "/build/index.html"));
-});
+// Catch 404 and forward to error handler
+
+// app.use(function (req, res, next) {
+//   const err = new Error("Not Found");
+//   err.status = 404;
+//   next(err);
+// });
+
+// // Error handlers
+// app.use(function (err, req, res, next) {
+//   res.status(err.status || 500);
+//   res.send("error", {
+//     message: err.message,
+//     error: process.env.NODE_ENV !== "production" ? err : {},
+//   });
+// });
+
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "public", "index.html"));
+// });
 
 app.listen(PORT || 8000, () => console.log(`server is listening ${PORT}`));
