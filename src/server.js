@@ -8,23 +8,12 @@ import bodyParser from "body-parser";
 import { fileURLToPath } from "url";
 // import morgan from "morgan";
 // import helmet from "helmet";
-// const jwt = require("express-jwt");
-// const jwksRsa = require("jwks-rsa");
-// import { auth as jwtauth } from "express-oauth2-jwt-bearer";
-import pkg from "express-openid-connect";
-const { auth, requiresAuth } = pkg;
-
 //set up file paths for static files - updated
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const PORT = process.env.PORT || 8000;
 const baseUrl = process.env.AUTH0_BASE_URL;
-const issuerBaseUrl = process.env.AUTH0_ISSUER_BASE_URL;
-const audience = process.env.AUTH0_AUDIENCE;
-const secret = process.env.AUTH0_SECRET;
-const clientid = process.env.AUTH0_CLIENT_ID;
-const clientsecret = process.env.AUTH0_CLIENT_SECRET;
 
 const app = express();
 //json parser
@@ -43,56 +32,6 @@ app.use(cookieParser(process.env.AUTH0_SECRET));
 //   })
 // );
 
-if (!issuerBaseUrl || !audience) {
-  throw "Make sure you have ISSUER_BASE_URL, and AUDIENCE in your .env file";
-}
-
-if (!audience) {
-  console.log(
-    "AUTH0_AUDIENCE not set in .env.local. Shutting down API server."
-  );
-  process.exit(1);
-}
-
-// const configJWT = {
-//   clientID: clientsecret,
-//   authRequired: false,
-//   authorizationParams: {
-//     response_type: 'code',
-//   },
-//   clientAuthMethod: secret,
-// }
-
-const config = {
-  authRequired: false,
-  auth0Logout: true,
-  baseURL: baseUrl,
-  clientID: clientid,
-  issuerBaseURL: issuerBaseUrl,
-  secret: secret,
-  routes: {
-    // Pass custom options to the login method by overriding the default login route
-    login: false,
-    // Pass a custom path to the postLogoutRedirect to redirect users to a different
-    // path after login, this should be registered on your authorization server.
-    postLogoutRedirect: "/logout",
-    callback: false,
-  },
-};
-
-// check if local port is being used
-if (
-  !config.baseURL &&
-  !process.env.BASE_URL &&
-  process.env.PORT &&
-  process.env.NODE_ENV !== "production"
-) {
-  config.baseURL = `http://localhost:${PORT}`;
-}
-
-// auth router attaches /login, /logout, and /callback routes to the baseURL
-app.use(auth(config));
-
 // cors
 app.use(cors({ origin: baseUrl }));
 
@@ -101,19 +40,6 @@ app.use(function (req, res, next) {
   res.locals.user = req.oidc.user;
   next();
 });
-
-// const checkJwt = jwt({
-//   secret: jwksRsa.expressJwtSecret({
-//     cache: true,
-//     rateLimit: true,
-//     jwksRequestsPerMinute: 5,
-//     jwksUri: `https://${authConfig.domain}/.well-known/jwks.json`,
-//   }),
-
-//   audience: authConfig.audience,
-//   issuer: `https://${authConfig.domain}/`,
-//   algorithms: ["RS256"],
-// });
 
 //static paths for images, fonts etc in build folder
 app.use(express.static(path.join(__dirname, "static")));
@@ -140,27 +66,6 @@ const withDB = async (operations, res) => {
     process.exit(1);
   }
 };
-
-/* test API*/
-
-// app.get("/api/private-scoped", (req, res) => {
-//   if (req.oidc.isAuthenticated()) {
-//     res.send(`hello ${req.oidc.user.sub} <a href="/logout">logout</a>`);
-//   } else {
-//     res.send('<a href="/login">login</a>');
-//   }
-// });
-
-// This route needs authentication
-app.get("/api/private", (req, res) => {
-  res.send(req.oidc.isAuthenticated() ? "Logged in" : "Logged out");
-});
-
-app.get("/api/profile", requiresAuth(), (req, res) => {
-  res.send(JSON.stringify(req.oidc.user));
-});
-
-/* test API*/
 
 // get all products
 app.get("/api/products", async (req, res) => {
@@ -247,7 +152,8 @@ app.get("/api/product/:name", async (req, res) => {
 // add likes to products
 app.post("/api/product/:name/likes", async (req, res) => {
   const productName = req.params.name;
-  //connect to mongo db
+
+  // connect to mongo db
   await withDB(async (db) => {
     try {
       const productsInfo = await db
@@ -272,56 +178,49 @@ app.post("/api/product/:name/likes", async (req, res) => {
   }, res);
 });
 
-app.get("/login", (req, res) =>
-  res.oidc.login({
-    returnTo: "/profile",
-    authorizationParams: {
-      redirect_uri: "http://localhost:3000/callback",
-    },
-  })
-);
-
-// app.get('/callback', (req, res) =>
-//   res.oidc.callback({
-//     redirectUri: 'http://localhost:3000/callback',
-//   })
-// );
-
-// app.get('/', async (req, res) => {
-//   const userInfo = await req.oidc.fetchUserInfo();
-//   // ...
-// });
+// get cart items
+app.get("/api/cartitems", async (req, res) => {
+  //connect to mongo db
+  await withDB(async (db) => {
+    const getcartItems = await db.collection("cartItems").find({});
+    const results = await getcartItems.toArray();
+    // Process the results
+    if (results.length > 0) {
+      console.log(`${results.length} customers found`);
+      // Here you could build your html or put the results in some other data structure you want to work with
+    } else {
+      console.log(`No customers found`);
+    }
+    //return results
+    res.status(200).json(results); //use json instead of send
+  }, res);
+});
 
 // register users
-// app.post("/api/register", async (req, res) => {
-//   //connect to mongo db
-//   await withDB(async (db) => {
-//     try{
+app.post("/api/register", async (req, res) => {
+  console.log(req.body);
 
-//       const newUser = req.body;
-//       newUser.hashPassword = bcrypt.hashSync(req.body.password, 10);
-//       await db.collection("register").insertOne(newUser ,(err, user) => {
-//           if (err) {
-//               return res.status(400).send({
-//                   message: err
-//               });
-//           } else {
-//               user.hashPassword = undefined;
-//               return res.json(user);
-//           }
-//       })
-
-//     }catch(err){
-//       console.log(err)
-
-//     }
-//   }, res);
-// });
-
-//test if build works
+  // await withDB(async (db) => {
+  //   try {
+  //     const newUser = req.body;
+  //     newUser.hashPassword = bcrypt.hashSync(req.body.password, 10);
+  //     await db.collection("users").insertOne(newUser, (err, user) => {
+  //       if (err) {
+  //         return res.status(400).send({
+  //           message: err,
+  //         });
+  //       } else {
+  //         user.hashPassword = undefined;
+  //         return res.json(user);
+  //       }
+  //     });
+  //   } catch (err) {
+  //     console.log(err);
+  //   }
+  // }, res);
+});
 
 // Catch 404 and forward to error handler
-
 // app.use(function (req, res, next) {
 //   const err = new Error("Not Found");
 //   err.status = 404;
@@ -335,10 +234,6 @@ app.get("/login", (req, res) =>
 //     message: err.message,
 //     error: process.env.NODE_ENV !== "production" ? err : {},
 //   });
-// });
-
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "public", "index.html"));
 // });
 
 app.listen(PORT || 8000, () => console.log(`server is listening ${PORT}`));
