@@ -12,8 +12,6 @@ Backend for Shoestore Web application based on photoshop website template design
 - [NodeMon](https://www.npmjs.com/package/nodemon)
 - [DotEnv](https://www.npmjs.com/package/dotenv)
 - [babel](https://babeljs.io/)
-- [auth0](https://manage.auth0.com/)
-- [express-openid-connect](https://www.npmjs.com/package/express-openid-connect)
 
 ## Getting Started
 
