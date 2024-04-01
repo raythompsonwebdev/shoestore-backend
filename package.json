@@ -21,23 +21,26 @@
     "node": "v16.13.2"
   },
   "dependencies": {
-    "@babel/cli": "^7.24.1",
     "@babel/plugin-syntax-flow": "^7.24.1",
     "@babel/plugin-transform-react-jsx": "^7.23.4",
+    "bcrypt": "^5.1.1",
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "express-openid-connect": "^2.17.1",
+    "express-rate-limit": "^7.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "6.5.0",
-    "nodemon": "^3.1.0",
     "save-dev": "^0.0.1-security"
   },
   "devDependencies": {
+    "@babel/cli": "^7.24.1",
     "@babel/core": "7.24.3",
     "@babel/node": "7.23.9",
-    "@babel/preset-env": "^7.24.3"
+    "@babel/plugin-transform-runtime": "^7.24.3",
+    "@babel/preset-env": "^7.24.3",
+    "nodemon": "^3.1.0"
   }
 }
