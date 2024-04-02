@@ -7,10 +7,12 @@ import path from "path";
 import { fileURLToPath } from "url";
 import cookieParser from "cookie-parser";
 import rateLimit from "express-rate-limit";
-// import { hashPassword } from "./hashPassword.js";
+import { hashPassword, comparePassword } from "./hashPassword.js";
+import { generateToken } from "./jwt.js";
 // import { auth } from "express-openid-connect";
 // import morgan from "morgan";
 // import helmet from "helmet";
+// import sanitize from 'mongo-sanitize'
 //set up file paths for static files - updated
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -83,29 +85,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 //static paths for images, fonts etc in build folder
 app.use(express.static(path.join(__dirname, "static")));
-
-// old main connect to mongo db
-// const withDB = async (operations, res) => {
-//   try {
-//     // const client = await MongoClient.connect(
-//     //   process.env.DB_USER && process.env.DB_PASS
-//     //     ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_DATA}?retryWrites=true&w=majority`
-//     //     : `mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false`,
-//     //   { useNewUrlParser: true, useUnifiedTopology: true }
-//     // );
-
-//     const client = await MongoClient.connect(
-//       "mongodb://127.0.0.1:27017/?directConnection=true&serverSelectionTimeoutMS=2000&appName=mongosh+2.1.4"
-//     );
-
-//     const db = client.db(`shoestore`);
-//     await operations(db);
-//     client.close();
-//   } catch (err) {
-//     res.status(500).send({ message: "Database Error", err });
-//     process.exit(1);
-//   }
-// };
 
 // const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.aqewv.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&appName=Cluster0`;
 
@@ -291,6 +270,77 @@ app.post("/api/register", async (req, res) => {
     });
   } catch (err) {
     res.status(400).json({ Error: err });
+  }
+});
+
+app.post("/api/login", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    // confirm if user email already exists.
+    const user = await db.collection("users").findOne({ useremail: email });
+
+    console.log(user, password);
+
+    if (user !== null) {
+      //PASSWORD CHECK - using sync method to compare - will try aync method
+      const validPassword = comparePassword(password, user.password);
+      if (!validPassword) {
+        return res.status(400).json({ error: "Incorrect password" });
+      }
+      const userInfo = {
+        user_id: user._id,
+        username: user.name,
+        email: user.useremail,
+      };
+      generateToken(res, userInfo); //generate token and signed cookie
+      res.status(200).json({ message: "User found" });
+    }
+  } catch (err) {
+    res.status(401).json({ message: "User doesn't exist" });
+  }
+});
+
+// login user route
+app.post("/api/logout", async (req, res) => {
+  res.cookie("jwt", "", {
+    httpOnly: true,
+    expires: new Date(0),
+  });
+
+  return res.status(200).json({ loggedIn: false, message: "user logged out" });
+});
+
+app.post("/api/addcartitems", async (req, res) => {
+  const cartResults = req.body.cartItems;
+
+  const cartUserId = req.body.user;
+
+  // const useremail = sanitize(cartUserId.email)
+
+  try {
+    const updatedUser = await db
+      .collection("users")
+      .findOne({ email: useremail });
+
+    //console.log(productsInfo)
+    //console.log("db cart items------------------------")
+
+    // The optional chaining operator (?.)-fixes object is possible null error for productsInfo variable. The non-null assertion operator (!.) or the nullish coalescing operator (??) & if (typeof myName === 'string').
+
+    await db
+      .collection("users")
+      .updateMany({}, { $set: { cartitems: cartResults } }, { upsert: true });
+
+    // const updatedProductInfo = await db
+    //   .collection('cartItems')
+    //   .findOne({ product })
+
+    res.status(200).json({ updatedUser });
+    ///res.status(200).json(updatedProductInfo)
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ message: err });
   }
 });
 
